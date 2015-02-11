@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>PlayersList.qml</file>
-        <file>mainWindow.qml</file>
+        <file>WaitPopup.qml</file>
+        <file>PlayScreen.qml</file>
     </qresource>
 </RCC>

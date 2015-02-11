@@ -11,6 +11,7 @@ MyCoolTTT::MyCoolTTT(QWidget *parent)
 , m_startGameData("Wanna play a little game?")
 , m_responseStartGameTrue("Yes")
 , m_responseStartGameFalse("No")
+, m_requestedOpponentAddress("")
 {
    m_pUdpSocket = new QUdpSocket(this);
    m_pUdpSocket->bind(45454, QUdpSocket::ShareAddress);
@@ -36,7 +37,8 @@ MyCoolTTT::~MyCoolTTT()
 
 void MyCoolTTT::requestToStartGame(QString opponentAdr)
 {
-   qDebug() << opponentAdr;
+   m_requestedOpponentAddress = opponentAdr;
+   m_pUdpSocket->writeDatagram(m_startGameData.data(), m_startGameData.size(), QHostAddress(m_requestedOpponentAddress), 45454);
 }
 
 void MyCoolTTT::broadcastReadyToPlay()
@@ -48,13 +50,13 @@ void MyCoolTTT::broadcastReadyToPlay()
 }
 
 
-void MyCoolTTT::sendRequestToStartGame()
-{
-//   QByteArray datagram = "WannaPlay";
-   m_pUdpSocket->writeDatagram(m_startGameData.data(), m_startGameData.size(),
-                            QHostAddress::LocalHost/*Broadcast*/, 45454);
-   ///<@todo openWaiting popup
-}
+//void MyCoolTTT::sendRequestToStartGame()
+//{
+////   QByteArray datagram = "WannaPlay";
+//   m_pUdpSocket->writeDatagram(m_startGameData.data(), m_startGameData.size(),
+//                            QHostAddress::LocalHost/*Broadcast*/, 45454);
+//   ///<@todo openWaiting popup
+//}
 
 void MyCoolTTT::addToList(QString adr)
 {
@@ -72,6 +74,22 @@ void MyCoolTTT::addToList(QString adr)
                                    "addToList",
                                    Q_RETURN_ARG(QVariant, returnedValue),
                                    Q_ARG(QVariant, msg));
+      }
+   }
+}
+
+void MyCoolTTT::startGame()
+{
+   m_pUdpSocket->close();
+   ///<@todo start tcp server
+   /// waitfor connection
+   for(QObject* it: m_pRootObjects)
+   {
+      if(it->objectName() == "mainWindow")
+      {
+         it->setProperty("isStartsFirst", QVariant(true));  ///makeRandom
+         it->setProperty("state", QVariant("playGameScreen"));
+         break;
       }
    }
 }
@@ -104,7 +122,6 @@ void MyCoolTTT::processDatagrams()
 
       if (!bIsOwnerRequest)
       {
-
          if( m_readyToPlayData == datagram.data() )
          {
             ///<@todo addToList
@@ -115,10 +132,15 @@ void MyCoolTTT::processDatagrams()
             ///<@todo request to user to start game with adr
          }else if( m_responseStartGameTrue == datagram.data() )
          {
-            ///<@todo closeWaitingPopup && check if request was send to this adr && start tcp server
+            if(adr.toString() == m_requestedOpponentAddress)
+            {
+            }
          }else if( m_responseStartGameFalse == datagram.data() )
          {
-            ///<@todo closeWaitingPopup
+            if(adr.toString() == m_requestedOpponentAddress)
+            {
+               ///<@todo closeWaitingPopup
+            }
          }else
          {
             qDebug() << "other" << datagram.data() << " " << adr.toString();
