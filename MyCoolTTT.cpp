@@ -39,6 +39,9 @@ void MyCoolTTT::requestToStartGame(QString opponentAdr)
 {
    m_requestedOpponentAddress = opponentAdr;
    m_pUdpSocket->writeDatagram(m_startGameData.data(), m_startGameData.size(), QHostAddress(m_requestedOpponentAddress), 45454);
+   ///[2]Test
+//   startGame();
+   ///[2]
 }
 
 void MyCoolTTT::broadcastReadyToPlay()
@@ -102,7 +105,7 @@ void MyCoolTTT::processDatagrams()
       datagram.resize(m_pUdpSocket->pendingDatagramSize());
       QHostAddress adr;
       m_pUdpSocket->readDatagram(datagram.data(), datagram.size(), &adr);
-
+      qDebug() << datagram.data();
       bool bIsOwnerRequest = false;
       for(const QHostAddress &ownAdr: m_lOwnerAddresses)
       {

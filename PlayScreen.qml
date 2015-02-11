@@ -70,18 +70,18 @@ Rectangle
       ///<@todo [1]ChangeToFalse after PlayScreen testing
       focus: true
       //[1]
-      highlight: Text
-      {
-         id: highlight
-         visible: fieldView.enabled
-         width: parent.cellWidth
-         height: parent.cellHeight
-         text: (isStartsFirst)? "X" : "O"
-//         font.pixelSize: width/*(width < height)? width : height*/
-         font.family: "Small Fonts"
-         verticalAlignment: Text.AlignVCenter
-         horizontalAlignment: Text.AlignHCenter
-      }
+//      highlight: Text
+//      {
+//         id: highlight
+//         visible: fieldView.enabled
+//         width: parent.cellWidth
+//         height: parent.cellHeight
+//         text: (isStartsFirst)? "X" : "O"
+////         font.pixelSize: width/*(width < height)? width : height*/
+//         font.family: "Small Fonts"
+//         verticalAlignment: Text.AlignVCenter
+//         horizontalAlignment: Text.AlignHCenter
+//      }
       model: ListModel
       {
          id: field

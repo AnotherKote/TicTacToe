@@ -13,10 +13,13 @@ ApplicationWindow {
    id: main
    objectName: "mainWindow"
    property alias isStartsFirst: playScreen.isStartsFirst
+   property alias inMove: playScreen.inMove
+   property alias outMove: playScreen.outMove
+   property alias state: screens.state
    Item {
       id: screens
-//      state: "playersListScreen"
-      state: "playGameScreen"
+      state: "playersListScreen"
+//      state: "playGameScreen"
       states: [
          State
          {
@@ -41,7 +44,7 @@ ApplicationWindow {
             PropertyChanges
             {
                target: waitPopup
-               text: onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText
+               text: "Connecting to " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText
                visible: true
             }
          },
@@ -62,7 +65,7 @@ ApplicationWindow {
             PropertyChanges
             {
                target: viewOnlinePlayers
-               focus: false
+               focus:   false
                visible: false
                enabled: false
             }
@@ -74,7 +77,12 @@ ApplicationWindow {
          State
          {
             name: "winScreen"
+         },
+         State
+         {
+            name: "requestToPlayGamePopup"
          }
+
       ]
       transitions:
       [
@@ -159,8 +167,8 @@ ApplicationWindow {
       {
          if(onlinePlayers.count != 0)
          {
-//            screens.state = "requestConnectionPopup"
-            screens.state = "playGameScreen"
+            screens.state = "requestConnectionPopup"
+//            screens.state = "playGameScreen"
             onlineListController.requestToStartGame(onlinePlayers.get(currentIndex).myCoolText)
             onlineListController.myProperty = true
          }
