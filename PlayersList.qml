@@ -5,8 +5,8 @@ import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
    title: qsTr("Tic Tac Toe")
-   width: 640
-   height: 480
+   width: 480
+   height: 640
 
    visible: true
    color: "grey"
@@ -19,7 +19,10 @@ ApplicationWindow {
    Item {
       id: screens
       state: "playersListScreen"
+
+//      state: "resultScreen"
 //      state: "playGameScreen"
+//      state: "requestToPlayGamePopup"
       states: [
          State
          {
@@ -30,6 +33,12 @@ ApplicationWindow {
                focus: true
                visible: true
                enabled: true
+               opacity: 1
+            }
+            PropertyChanges
+            {
+               target: waitPopup
+               visible: false
             }
          },
          State
@@ -44,7 +53,7 @@ ApplicationWindow {
             PropertyChanges
             {
                target: waitPopup
-               text: "Connecting to " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText
+               text: "Connecting to <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText
                visible: true
             }
          },
@@ -72,15 +81,37 @@ ApplicationWindow {
          },
          State
          {
-            name: "loseScreen"
-         },
-         State
-         {
-            name: "winScreen"
+            name: "resultScreen"
+            PropertyChanges
+            {
+               target: playScreen
+               visible: true
+//               enabled: false
+            }
+            PropertyChanges {
+               target: resultScreen
+               visible: true
+               enabled: true
+               opacity: 0.8
+            }
          },
          State
          {
             name: "requestToPlayGamePopup"
+            PropertyChanges
+            {
+               target: viewOnlinePlayers
+               focus: false
+               enabled: false
+               opacity: 0.5
+            }
+            PropertyChanges
+            {
+               target: waitPopup
+               visible: true
+               ynPopup: true
+               opacity: 1
+            }
          }
 
       ]
@@ -108,17 +139,48 @@ ApplicationWindow {
                to: 1
                duration: 3000
             }
+         },
+         Transition
+         {
+            from: "playGameScreen"
+            to: "resultScreen"
+            PropertyAnimation
+            {
+               target: resultScreen
+               easing.type: Easing.Linear
+               properties: "opacity"
+               to: 0.7
+               duration: 3000
+            }
          }
+
       ]
    }
 
    WaitPopup{
+      objectName: "waitPopup"
       id: waitPopup
       text: "identifying..."
+      onPopupAnswerChanged:
+      {
+         onlineListController.popupAnswer = popupAnswer
+         console.log("popup answer" + popupAnswer)
+         popupAnswer = 0
+      }
    }
 
    PlayScreen{
       id: playScreen
+   }
+
+   ResultScreen{
+      id: resultScreen
+      function buttonPressed()
+      {
+         onlinePlayers.clear()
+         screens.state = "playersListScreen"
+         onlineListController.returnToList();
+      }
    }
 
    Component {
@@ -168,9 +230,7 @@ ApplicationWindow {
          if(onlinePlayers.count != 0)
          {
             screens.state = "requestConnectionPopup"
-//            screens.state = "playGameScreen"
             onlineListController.requestToStartGame(onlinePlayers.get(currentIndex).myCoolText)
-            onlineListController.myProperty = true
          }
       }
 

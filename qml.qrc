@@ -3,5 +3,6 @@
         <file>PlayersList.qml</file>
         <file>WaitPopup.qml</file>
         <file>PlayScreen.qml</file>
+        <file>ResultScreen.qml</file>
     </qresource>
 </RCC>
