@@ -4,5 +4,8 @@
         <file>WaitPopup.qml</file>
         <file>PlayScreen.qml</file>
         <file>ResultScreen.qml</file>
+        <file>PFKidsProGradeOne.ttf</file>
+        <file>backgroudFill.png</file>
+        <file>animation/Underline.gif</file>
     </qresource>
 </RCC>

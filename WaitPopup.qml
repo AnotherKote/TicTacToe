@@ -26,7 +26,7 @@ Item
          y: 0
          height: parent.height*2/3
          width: parent.width
-         font.family: "Small Fonts"
+         font.family: pfKidsProGradeOneFont.name
          font.pointSize: 25
          verticalAlignment: Text.AlignVCenter
          horizontalAlignment: Text.AlignHCenter
@@ -60,7 +60,7 @@ Item
             anchors.fill: parent
             width: parent.width
             text: "Yes"
-            font.family: "Small Fonts"
+            font.family: pfKidsProGradeOneFont.name
             font.pixelSize: height
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
@@ -113,7 +113,7 @@ Item
          {
             anchors.fill: parent
             text: "No"
-            font.family: "Small Fonts"
+            font.family: pfKidsProGradeOneFont.name
             font.pixelSize: height
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter

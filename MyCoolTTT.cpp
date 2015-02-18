@@ -72,13 +72,13 @@ void MyCoolTTT::broadcastReadyToPlay()
 {
 
    m_pUdpConnectionSocket->writeDatagram(m_readyToPlayData.data(), m_readyToPlayData.size(),
-                            /*QHostAddress::LocalHost*/QHostAddress::Broadcast, 45454);
+                            QHostAddress::LocalHost/*QHostAddress::Broadcast*/, 45454);
 }
 
 void MyCoolTTT::addToList(QString adr)
 {
    qDebug() << "add To list";
-   if(!m_lPlayersOnline.contains(adr, Qt::CaseInsensitive))
+   if(/*!m_lPlayersOnline.contains(adr, Qt::CaseInsensitive)*/true)
    {
       m_lPlayersOnline.append(adr);
       for(QObject* it: m_pRootObjects)
@@ -173,10 +173,10 @@ void MyCoolTTT::processDatagrams()
       }
 
 //[1] for test on one PC
-      if (adr == QHostAddress::LocalHost)
-      {
-         bIsOwnerRequest = true;
-      }
+//      if (adr == QHostAddress::LocalHost)
+//      {
+//         bIsOwnerRequest = true;
+//      }
 //[1] for test on one PC
 
       if (!bIsOwnerRequest)

@@ -24,7 +24,7 @@ Rectangle
       height: parent.height/3
 
       font.pixelSize: parent.height/6
-      font.family: "Small Fonts"
+      font.family: pfKidsProGradeOneFont.name
       font.bold: true
       verticalAlignment: Text.AlignVCenter
       horizontalAlignment: Text.AlignHCenter
@@ -53,7 +53,7 @@ Rectangle
          anchors.centerIn: parent
          width: parent.width*3/4
          height: parent.height
-         font.family: "Small Fonts"
+         font.family: pfKidsProGradeOneFont.name
          text: "Back to list"
          verticalAlignment: Text.AlignVCenter
          horizontalAlignment: Text.AlignHCenter

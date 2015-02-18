@@ -9,13 +9,35 @@ ApplicationWindow {
    height: 640
 
    visible: true
-   color: "grey"
+   color: "white"
    id: main
    objectName: "mainWindow"
    property alias isStartsFirst: playScreen.isStartsFirst
    property alias inMove: playScreen.inMove
    property alias outMove: playScreen.outMove
    property alias state: screens.state
+
+   FontLoader { id: pfKidsProGradeOneFont; source: "./PFKidsProGradeOne.ttf" }
+
+   Image
+   {
+      id: background
+      source: "./backgroudFill.png"
+   }
+
+   Image
+   {
+      width: Screen.desktopAvailableWidth
+      height: Screen.desktopAvailableHeight
+
+      fillMode: Image.Tile
+      smooth: true
+      clip: true
+      horizontalAlignment: Image.AlignLeft
+      verticalAlignment: Image.AlignTop
+      source: background.source
+   }
+
    Item {
       id: screens
       state: "playersListScreen"
@@ -187,18 +209,39 @@ ApplicationWindow {
       id: delegate
       Item {
          width: main.width
-         height: 70
+         height: background.height * 2
          anchors.horizontalCenter: main.horizontalCenter
+         id: delegateRoot
          Row {
-            anchors.verticalCenter: parent.verticalCenter
-            Text {
-               width: main.width
-               anchors.horizontalCenter: main.horizontalCenter
-               text: myCoolText
-               font.family: "Small Fonts"
-               horizontalAlignment: Text.AlignHCenter
-               verticalAlignment: Text.AlignVCenter
-               font.pointSize: 29
+            Item
+            {
+               anchors.verticalCenter: parent.verticalCenter
+               Image
+               {
+                  smooth: true
+                  clip: true
+                  source: "./backgroudFill.png"
+                  fillMode: Image.Tile
+                  width: main.width
+                  height: delegateRoot.height
+                  horizontalAlignment: Image.AlignLeft
+                  verticalAlignment: Image.AlignTop
+                  z: 100
+               }
+               Text {
+                  z: 150
+                  y: delegateRoot.height - paintedHeight + background.height/3
+                  width: main.width
+                  height: delegateRoot.height
+                  color: "darkblue"
+                  opacity: 0.9
+                  anchors.horizontalCenter: main.horizontalCenter
+                  text: myCoolText
+                  font.family: pfKidsProGradeOneFont.name
+                  horizontalAlignment: Text.AlignHCenter
+//                  verticalAlignment: Text.AlignBottom
+                  font.pointSize: 30
+               }
             }
          }
          MouseArea {
@@ -225,6 +268,8 @@ ApplicationWindow {
       focus: true
       opacity: 1
       visible: false
+      clip: true
+      boundsBehavior: Flickable.StopAtBounds
       Keys.onReturnPressed:
       {
          if(onlinePlayers.count != 0)
@@ -233,37 +278,54 @@ ApplicationWindow {
             onlineListController.requestToStartGame(onlinePlayers.get(currentIndex).myCoolText)
          }
       }
-
-      header: Rectangle {
+      header: Item {
+         z: 200
+         id: viewHeader
          width: parent.width
-         height: 30
-         gradient: Gradient {
-            GradientStop {position: 0; color: "gray"}
-            GradientStop {position: 0.7; color: "black"}
+         height: background.height * 2
+         Image
+         {
+            smooth: true
+            clip: true
+            source: "./backgroudFill.png"
+            fillMode: Image.Tile
+            width: parent.width
+            height: parent.height
+            horizontalAlignment: Image.AlignLeft
+            verticalAlignment: Image.AlignTop
          }
          Text{
-            anchors.centerIn: parent;
-            color: "gray";
-            font.family: "Small Fonts"
-            text: "online players";
-            font.bold: true;
-            font.pointSize: 20
+            y: parent.height - paintedHeight + background.height/3
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "red";
+            font.family: pfKidsProGradeOneFont.name
+            text: "Список игроков:";
+            opacity: 0.8
+            height: parent.height
+            font.pointSize: 32
          }
       }
-      footer: Rectangle {
-         width: main.width
-         height: 30
-         gradient: Gradient {
-            GradientStop {position: 0; color: "gray"}
-            GradientStop {position: 0.7; color: "black"}
+      highlight: Item
+      {
+         z: 120
+         id: highlightAnimation
+         AnimatedImage {
+            id: anim
+            anchors.horizontalCenter: parent.horizontalCenter
+            y: parent.height
+            z: 120
+            scale:0.8
+            opacity: 0.8
+            source: "./animation/Underline.gif"
+         }
+         onYChanged:
+         {
+            anim.currentFrame = 0
+            anim.playing = true
          }
       }
-      highlight: Rectangle {
-         width: main.width
-         color: "red"
-      }
+
       model: onlinePlayers
       delegate: delegate
    }
-
 }

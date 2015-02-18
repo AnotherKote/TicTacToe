@@ -194,7 +194,7 @@ Rectangle
 //         height: fieldView.cellHeight
 //         text: (isStartsFirst)? "X" : "O"
 //         font.pixelSize: height/*(width < height)? width : height*/
-//         font.family: "Small Fonts"
+//         font.family: pfKidsProGradeOneFont.name
 //         verticalAlignment: Text.AlignVCenter
 //         horizontalAlignment: Text.AlignHCenter
 //      }
@@ -221,7 +221,7 @@ Rectangle
             height: parent.height
             text: value
             font.pixelSize: (parent.width < parent.height)? parent.width : parent.height
-            font.family: "Small Fonts"
+            font.family: pfKidsProGradeOneFont.name
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
          }
@@ -230,7 +230,7 @@ Rectangle
             anchors.fill: parent
             onClicked:
             {
-               console.log("on Moust click " + index + " field value: " + field.get(index).value)
+               console.log("on Mouse click " + index + " field value: " + field.get(index).value)
                if(field.get(index).value === fieldValues.empty)
                {
                   fieldRect.outMove = index
