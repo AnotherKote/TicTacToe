@@ -40,11 +40,11 @@ ApplicationWindow {
 
    Item {
       id: screens
-      state: "playersListScreen"
+//      state: "playersListScreen"
 
 //      state: "resultScreen"
 //      state: "playGameScreen"
-//      state: "requestToPlayGamePopup"
+      state: "waitingScreen"
       states: [
          State
          {
@@ -65,7 +65,7 @@ ApplicationWindow {
          },
          State
          {
-            name: "requestConnectionPopup"
+            name: "waitingScreen"
             PropertyChanges
             {
                target: viewOnlinePlayers
@@ -74,8 +74,8 @@ ApplicationWindow {
             }
             PropertyChanges
             {
-               target: waitPopup
-               text: "Connecting to <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText
+               target: waitingScreen
+               text.text: "Ожидаем ответа от <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText + "<br>"
                visible: true
             }
          },
@@ -142,7 +142,7 @@ ApplicationWindow {
          Transition
          {
             from: "playersListScreen"
-            to: "requestConnectionPopup"
+            to: "waitingScreen"
             PropertyAnimation
             {
                target: viewOnlinePlayers;
@@ -178,6 +178,22 @@ ApplicationWindow {
 
       ]
    }
+
+   WaitingScreen
+   {
+      id: waitingScreen
+      anchors.fill: parent
+
+      background.width: Screen.desktopAvailableWidth
+      background.height: Screen.desktopAvailableHeight
+      text.font.family: pfKidsProGradeOneFont.name
+
+      onVisibleChanged:
+      {
+         waitingTimer.start()
+      }
+   }
+
 
    WaitPopup{
       objectName: "waitPopup"
@@ -274,7 +290,7 @@ ApplicationWindow {
       {
          if(onlinePlayers.count != 0)
          {
-            screens.state = "requestConnectionPopup"
+            screens.state = "waitingScreen"
             onlineListController.requestToStartGame(onlinePlayers.get(currentIndex).myCoolText)
          }
       }

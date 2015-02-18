@@ -7,5 +7,8 @@
         <file>PFKidsProGradeOne.ttf</file>
         <file>backgroudFill.png</file>
         <file>animation/Underline.gif</file>
+        <file>WaitingScreen.qml</file>
+        <file>particle.png</file>
+        <file>mask.png</file>
     </qresource>
 </RCC>
