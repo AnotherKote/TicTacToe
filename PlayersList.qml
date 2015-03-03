@@ -27,6 +27,8 @@ ApplicationWindow {
 
    Image
    {
+      id: backgroundImage
+
       width: Screen.desktopAvailableWidth
       height: Screen.desktopAvailableHeight
 
@@ -43,8 +45,8 @@ ApplicationWindow {
 //      state: "playersListScreen"
 
 //      state: "resultScreen"
-//      state: "playGameScreen"
-      state: "waitingScreen"
+      state: "playGameScreen"
+//      state: "waitingScreen"
       states: [
          State
          {
@@ -55,7 +57,7 @@ ApplicationWindow {
                focus: true
                visible: true
                enabled: true
-               opacity: 1
+//               opacity: 1
             }
             PropertyChanges
             {
@@ -69,14 +71,21 @@ ApplicationWindow {
             PropertyChanges
             {
                target: viewOnlinePlayers
-               focus: false
-               enabled: false
+//               focus: false
+               visible: true
+               y: waitingScreen.height
             }
             PropertyChanges
             {
                target: waitingScreen
                text.text: "Ожидаем ответа от <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText + "<br>"
                visible: true
+               y: 0
+            }
+            PropertyChanges
+            {
+               target: backgroundImage
+               y: waitingScreen.height
             }
          },
          State
@@ -146,43 +155,33 @@ ApplicationWindow {
             PropertyAnimation
             {
                target: viewOnlinePlayers;
-               easing.period: 0.08
-               easing.amplitude: 2.05
-               easing.type: Easing.OutQuart
-               properties: "opacity"
-               to: 0
-               duration: 3000
+               properties: "y"
+               duration: 2000
             }
             PropertyAnimation
             {
-               target: waitPopup
-               easing.type: Easing.InQuart
-               properties: "opacity"
-               to: 1
-               duration: 3000
+               target: waitingScreen;
+               properties: "y"
+               duration: 2000
             }
-         },
-         Transition
-         {
-            from: "playGameScreen"
-            to: "resultScreen"
             PropertyAnimation
             {
-               target: resultScreen
-               easing.type: Easing.Linear
-               properties: "opacity"
-               to: 0.7
-               duration: 3000
+               target: backgroundImage;
+               properties: "y"
+               duration: 2000
             }
          }
-
       ]
    }
 
    WaitingScreen
    {
       id: waitingScreen
-      anchors.fill: parent
+
+      x:0
+      y: -parent.height
+      width: parent.width
+      height: parent.height
 
       background.width: Screen.desktopAvailableWidth
       background.height: Screen.desktopAvailableHeight
@@ -278,9 +277,17 @@ ApplicationWindow {
       }
    }
 
+   PropertyAnimation{
+
+   }
+
    ListView {
       id: viewOnlinePlayers
-      anchors.fill: parent
+//      anchors.fill: parent
+      x: 0
+      y: 0
+      height: parent.height
+      width: parent.width
       focus: true
       opacity: 1
       visible: false
@@ -292,6 +299,8 @@ ApplicationWindow {
          {
             screens.state = "waitingScreen"
             onlineListController.requestToStartGame(onlinePlayers.get(currentIndex).myCoolText)
+            waitingScreen.text.text = "Ожидаем ответа от <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText + "<br>"
+//            waitingScreen.visible = true
          }
       }
       header: Item {

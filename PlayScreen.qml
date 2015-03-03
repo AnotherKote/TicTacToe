@@ -5,18 +5,117 @@ Rectangle
    width: main.width
    height: main.height
    opacity: 1
+   id: root
 
    enabled: false
    visible: false
-   id: fieldRect
    property bool isStartsFirst: true
    property int inMove : 9
    property int outMove : 9
    color: main.color
-   Rectangle {x: parent.width/3;   y:0;                 width: 2;            height: parent.height; color: "black"}
-   Rectangle {x: parent.width*2/3; y:0;                 width: 2;            height: parent.height; color: "black"}
-   Rectangle {x: 0;                y:parent.height/3;   width: parent.width; height: 2;             color: "black"}
-   Rectangle {x: 0;                y:parent.height*2/3; width: parent.width; height: 2;             color: "black"}
+
+   Canvas
+   {
+       id: canvas
+       anchors.fill: parent
+       property variant destPoint: [0, 0]
+       property variant prevPoint: [0, 0]
+       onPaint:
+       {
+          var ctx = getContext('2d')
+          ctx.strokeStyle = "darkblue"
+          ctx.lineWidth = 3
+          ctx.lineCap = 'round'
+
+          ctx.beginPath()
+          ctx.moveTo(prevPoint[0], prevPoint[1])
+          ctx.lineTo(destPoint[0], destPoint[1])
+          prevPoint[0] = destPoint[0]
+          prevPoint[1] = destPoint[1]
+          ctx.stroke()
+//          ctx.closePath()
+          console.log("prevPoint " + prevPoint + " destPoint " + destPoint)
+       }
+   }
+
+   function drawField()
+   {
+      drawingTimerHorizontal1.srcPoint = [root.width/3, Math.random() * height/8]
+      drawingTimerHorizontal1.dstPoint = [root.width/3, root.height - Math.random() * height/8]
+      drawingTimerHorizontal1.step = [0, 20]
+      drawingTimerHorizontal1.start()
+   }
+
+   DrawingTimer
+   {
+      id: drawingTimerHorizontal1
+      canv: canvas
+      onRunningChanged:
+      {
+         if (running == false)
+         {
+            drawingTimerHorizontal2.srcPoint = [root.width*2/3, Math.random() * height/8]
+            drawingTimerHorizontal2.dstPoint = [root.width*2/3, root.height - Math.random() * height/8]
+            drawingTimerHorizontal2.step = [0, 20]
+            drawingTimerHorizontal2.start()
+         }
+      }
+   }
+
+   DrawingTimer
+   {
+      id: drawingTimerHorizontal2
+      canv: canvas
+      onRunningChanged:
+      {
+         if (running == false)
+         {
+            drawingTimerVertical1.srcPoint = [Math.random() * width/8, root.height/3]
+            drawingTimerVertical1.dstPoint = [width - Math.random() * width/8, root.height/3]
+            drawingTimerVertical1.step = [20, 0]
+            drawingTimerVertical1.start()
+         }
+      }
+   }
+
+   DrawingTimer
+   {
+      id: drawingTimerVertical1
+      canv: canvas
+      onRunningChanged:
+      {
+         if (running == false)
+         {
+            drawingTimerVertical2.srcPoint = [Math.random() * width/8, root.height*2/3]
+            drawingTimerVertical2.dstPoint = [width - Math.random() * width/8, root.height*2/3]
+            drawingTimerVertical2.step = [20, 0]
+            drawingTimerVertical2.start()
+         }
+      }
+   }
+
+   DrawingTimer
+   {
+      id: drawingTimerVertical2
+      canv: canvas
+      onRunningChanged:
+      {
+         if (running == false)
+         {
+            drawCross(0)
+         }
+      }
+   }
+
+   onWidthChanged:
+   {
+      drawField()
+   }
+
+   onHeightChanged:
+   {
+      drawField()
+   }
 
    onVisibleChanged:
    {
@@ -24,10 +123,51 @@ Rectangle
       {
          field.init()
          fieldView.enabled = isStartsFirst
+         drawField()
       }else
       {
          fieldView.enabled = false
       }
+   }
+
+   function drawNought(index)
+   {
+
+   }
+
+   function drawCross(index)
+   {
+      var topLeftCornerX = (root.width * index%3)/3
+      var topLeftCornerY = (root.height * index/3)/3
+
+      drawingCross1.srcPoint = [topLeftCornerX, topLeftCornerY]
+      drawingCross1.dstPoint = [topLeftCornerX + root.width/3, topLeftCornerY + root.height/3]
+      drawingCross1.step = [20, 20]
+
+      drawingCross1.start()
+   }
+
+   DrawingTimer
+   {
+      id: drawingCross1
+      canv: canvas
+      onRunningChanged:
+      {
+         if (running == false)
+         {
+            drawingCross2.srcPoint = [dstPoint[0], srcPoint[1]]
+            drawingCross2.dstPoint = [srcPoint[0], dstPoint[1]]
+            drawingCross2.step = [0, 20]
+            drawingCross2.start()
+            console.log("second cross")
+         }
+      }
+   }
+
+   DrawingTimer
+   {
+      id: drawingCross2
+      canv: canvas
    }
 
    onInMoveChanged:
@@ -233,14 +373,14 @@ Rectangle
                console.log("on Mouse click " + index + " field value: " + field.get(index).value)
                if(field.get(index).value === fieldValues.empty)
                {
-                  fieldRect.outMove = index
+                  root.outMove = index
                }
             }
          }
       }
       Keys.onReturnPressed:
       {
-         fieldRect.outMove = currentIndex
+         root.outMove = currentIndex
       }
       onEnabledChanged:
       {
@@ -256,7 +396,7 @@ Rectangle
       PropertyAnimation
       {
          id: fadeOutWhenDisable
-         target: fieldRect
+         target: root
          easing.type: Easing.OutExpo
          properties: "opacity"
          to: 0.3
@@ -265,7 +405,7 @@ Rectangle
       PropertyAnimation
       {
          id: appearWhenEnable
-         target: fieldRect
+         target: root
          easing.type: Easing.InExpo
          properties: "opacity"
          to: 1

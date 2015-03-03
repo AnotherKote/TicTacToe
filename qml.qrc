@@ -10,5 +10,6 @@
         <file>WaitingScreen.qml</file>
         <file>particle.png</file>
         <file>mask.png</file>
+        <file>DrawingTimer.qml</file>
     </qresource>
 </RCC>

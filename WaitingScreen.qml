@@ -57,7 +57,7 @@ Item  {
 
        system: particleSystem
 
-       emitRate: 0.2
+       emitRate: 1
        lifeSpan: 500000
        lifeSpanVariation: 5000
        size: 250
@@ -95,7 +95,7 @@ Item  {
    Timer
    {
       id: waitingTimer
-      interval: 500
+      interval: 100
       running: false
       repeat: true
       property int times: 0
