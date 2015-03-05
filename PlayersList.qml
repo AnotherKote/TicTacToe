@@ -8,6 +8,11 @@ ApplicationWindow {
    width: 480
    height: 640
 
+   minimumWidth: width
+   maximumWidth: width
+   minimumHeight: height
+   maximumHeight: height
+
    visible: true
    color: "white"
    id: main
@@ -44,8 +49,9 @@ ApplicationWindow {
       id: screens
 //      state: "playersListScreen"
 
+      state: "requestToPlayGamePopup"
 //      state: "resultScreen"
-      state: "playGameScreen"
+//      state: "playGameScreen"
 //      state: "waitingScreen"
       states: [
          State
@@ -141,7 +147,7 @@ ApplicationWindow {
                target: waitPopup
                visible: true
                ynPopup: true
-               opacity: 1
+//               opacity: 1
             }
          }
 
@@ -197,7 +203,19 @@ ApplicationWindow {
    WaitPopup{
       objectName: "waitPopup"
       id: waitPopup
-      text: "identifying..."
+      text: "Начать игру с <br>127.0.0.1"
+
+      x:0
+      //[test]
+//      y: parent.height
+      y:0
+      //[test]
+      width: parent.width
+      height: parent.height
+
+      background.width: Screen.desktopAvailableWidth
+      background.height: Screen.desktopAvailableHeight
+
       onPopupAnswerChanged:
       {
          onlineListController.popupAnswer = popupAnswer

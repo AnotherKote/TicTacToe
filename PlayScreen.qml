@@ -102,7 +102,8 @@ Rectangle
       {
          if (running == false)
          {
-            drawCross(0)
+//            coolCrossTimer.start()
+//            circleTimer.start()
          }
       }
    }
@@ -132,17 +133,104 @@ Rectangle
 
    function drawNought(index)
    {
+      var topLeftCornerX = (root.width * (index%3))/3
+      var topLeftCornerY = (root.height * Math.floor(index/3))/3
+      console.log("Index " + index + " Index%3 " + index%3 + " Index/3 " + Math.floor(index/3))
+      var width = root.width/3
+      var height = root.height/3
+      var margin = 20
+      topLeftCornerX += margin
+      topLeftCornerY += margin
+      width -= 2 * margin
+      height -= 2 * margin
 
+      circleTimer.centerPoint[0] = topLeftCornerX + width/2
+      circleTimer.centerPoint[1] = topLeftCornerY + height/2
+      circleTimer.radius = (width > height)? height/2 : width/2
+      circleTimer.start()
+   }
+
+   Timer
+   {
+      id: circleTimer
+      running: false
+      repeat: true
+      property real pointAngle: 0
+      interval: 5
+      property variant centerPoint: [0, 0]
+      property variant startPoint: [0, 0]
+      property real radius: 0
+      onTriggered:
+      {
+         function rotate (point, angle)
+         {
+            var rotated_point = [0, 0];
+            rotated_point[0] = point[0] * Math.cos(angle) - point[1] * Math.sin(angle) + centerPoint[0];
+            rotated_point[1] = point[0] * Math.sin(angle) + point[1] * Math.cos(angle) + centerPoint[1];
+            return rotated_point;
+         }
+
+         var destPoint = rotate (startPoint, pointAngle)
+
+         canvas.destPoint[0] = destPoint [0]
+         canvas.destPoint[1] = destPoint [1]
+         console.log("pointAngle.toFixed(1) " + pointAngle.toFixed(1) + " (2*Math.PI).toFixed(1) " + (2*Math.PI).toFixed(1))
+         canvas.requestPaint()
+
+         if(pointAngle.toFixed(1) === (2*Math.PI).toFixed(1))
+         {
+            stop()
+         }
+         pointAngle += 0.1
+
+      }
+      onRunningChanged:
+      {
+         if(running == true)
+         {
+            pointAngle = 0
+            startPoint[0] = 0
+            startPoint[1] = -radius
+            canvas.prevPoint[0] = startPoint[0] + centerPoint[0]
+            canvas.prevPoint[1] = startPoint[1] + centerPoint[1]
+            canvas.destPoint[0] = startPoint[0] + centerPoint[0]
+            canvas.destPoint[1] = startPoint[1] + centerPoint[1]
+         }
+      }
    }
 
    function drawCross(index)
    {
-      var topLeftCornerX = (root.width * index%3)/3
-      var topLeftCornerY = (root.height * index/3)/3
+      var topLeftCornerX = (root.width * (index%3))/3
+      var topLeftCornerY = (root.height * Math.floor(index/3))/3
+      console.log("Index " + index + " Index%3 " + index%3 + " Index/3 " + Math.floor(index/3))
+      var width = root.width/3
+      var height = root.height/3
+      var margin = 20
+      topLeftCornerX += margin
+      topLeftCornerY += margin
+      width -= 2 * margin
+      height -= 2 * margin
+      console.log("cross " + " width " + width + " height " + height + " X " + topLeftCornerX + " Y " + topLeftCornerY)
+      if(width > height)
+      {
+         drawingCross1.srcPoint = [topLeftCornerX + (width - height)/2, topLeftCornerY]
+         drawingCross1.dstPoint = [topLeftCornerX + width - (width - height)/2, topLeftCornerY + height]
+         drawingCross2.srcPoint = [topLeftCornerX + width - (width - height)/2, topLeftCornerY]
+         drawingCross2.dstPoint = [topLeftCornerX + (width - height)/2, topLeftCornerY + height]
+      }else
+      {
+         drawingCross1.srcPoint = [topLeftCornerX, topLeftCornerY + (height - width)/2]
+         drawingCross1.dstPoint = [topLeftCornerX + width, topLeftCornerY + height - (height - width)/2]
+         drawingCross2.srcPoint = [topLeftCornerX + width, topLeftCornerY + (height - width)/2]
+         drawingCross2.dstPoint = [topLeftCornerX, topLeftCornerY + height - (height - width)/2]
+      }
 
-      drawingCross1.srcPoint = [topLeftCornerX, topLeftCornerY]
-      drawingCross1.dstPoint = [topLeftCornerX + root.width/3, topLeftCornerY + root.height/3]
-      drawingCross1.step = [20, 20]
+      drawingCross1.step = [3, 3]
+      drawingCross1.interval = 2
+
+      drawingCross2.step = [-3, 3]
+      drawingCross2.interval = 2
 
       drawingCross1.start()
    }
@@ -155,11 +243,7 @@ Rectangle
       {
          if (running == false)
          {
-            drawingCross2.srcPoint = [dstPoint[0], srcPoint[1]]
-            drawingCross2.dstPoint = [srcPoint[0], dstPoint[1]]
-            drawingCross2.step = [0, 20]
             drawingCross2.start()
-            console.log("second cross")
          }
       }
    }
@@ -170,11 +254,40 @@ Rectangle
       canv: canvas
    }
 
+//   Timer
+//   {
+//      id: coolCrossTimer
+//      property int index : 0
+//      running: false
+//      repeat: true
+//      interval: 5000
+//      onTriggered:
+//      {
+//         if(index != 9)
+//         {
+//            drawCross(index++)
+//         } else
+//         {
+//            stop()
+//         }
+//      }
+//   }
+
    onInMoveChanged:
    {
       console.assert(inMove >= 0, "index for field is out of range")
       console.assert(inMove <= 8, "index for field is out of range")
-      field.get(inMove).value = (isStartsFirst)? fieldValues.zero : fieldValues.cross
+//      field.get(inMove).value = (isStartsFirst)? fieldValues.nought : fieldValues.cross
+      if(isStartsFirst)
+      {
+         drawNought(inMove)
+//         drawCross(outMove)
+         field.get(inMove).value = fieldValues.nought
+      } else
+      {
+         drawCross(inMove)
+         field.get(inMove).value = fieldValues.cross
+      }
       fieldView.enabled = true
       checkCollision()
    }
@@ -184,7 +297,17 @@ Rectangle
       console.assert(outMove >= 0, "index for field is out of range")
       console.assert(outMove <= 8, "index for field is out of range")
       console.log("OutMove " + outMove)
-      field.get(outMove).value = (isStartsFirst)? fieldValues.cross : fieldValues.zero
+//      field.get(outMove).value = (isStartsFirst)? fieldValues.cross : fieldValues.nought
+      if(isStartsFirst)
+      {
+         drawCross(outMove)
+         field.get(outMove).value = fieldValues.cross
+      } else
+      {
+         drawNought(outMove)
+         field.get(outMove).value = fieldValues.nought
+      }
+
       fieldView.enabled = false
       onlineListController.makeMove(outMove)
       checkCollision()
@@ -203,10 +326,10 @@ Rectangle
    {
       id: fieldValues
       property string cross: "X"
-      property string zero:  "O"
+      property string nought:  "O"
       property string empty: " "
       property string crossLine: cross + cross + cross
-      property string zeroLine: zero + zero + zero
+      property string noughtLine: nought + nought + nought
    }
 
    function isWinnigCombination(combination)
@@ -221,7 +344,7 @@ Rectangle
          {
             ret = winningResult.youLose
          }
-      } else if (combination === fieldValues.zeroLine)
+      } else if (combination === fieldValues.noughtLine)
       {
          if(!isStartsFirst)
          {
@@ -354,17 +477,17 @@ Rectangle
       {
          width: main.width/3
          height: main.height/3
-         Text
-         {
-            anchors.fill: parent
-            width: parent.width
-            height: parent.height
-            text: value
-            font.pixelSize: (parent.width < parent.height)? parent.width : parent.height
-            font.family: pfKidsProGradeOneFont.name
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-         }
+//         Text
+//         {
+//            anchors.fill: parent
+//            width: parent.width
+//            height: parent.height
+//            text: value
+//            font.pixelSize: (parent.width < parent.height)? parent.width : parent.height
+//            font.family: pfKidsProGradeOneFont.name
+//            verticalAlignment: Text.AlignVCenter
+//            horizontalAlignment: Text.AlignHCenter
+//         }
          MouseArea
          {
             anchors.fill: parent
