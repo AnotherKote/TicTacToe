@@ -69,7 +69,7 @@ ApplicationWindow {
                visible: true
                enabled: true
                y:0
-//               opacity: 1
+               x:0
             }
             PropertyChanges
             {
@@ -88,6 +88,17 @@ ApplicationWindow {
             {
                target: backgroundImage
                y: 0
+            }
+            PropertyChanges
+            {
+               target: playScreen
+               x: main.width
+               y: 0
+            }
+            PropertyChanges
+            {
+               target: resultScreen
+               x: main.width
             }
          },
          State
@@ -117,20 +128,22 @@ ApplicationWindow {
             PropertyChanges
             {
                target: waitPopup
-               visible: false
+               x: -main.width
+            }
+            PropertyChanges {
+               target: waitingScreen
+               x: -main.width
             }
             PropertyChanges
             {
                target: playScreen
-               visible: true
                enabled: true
+               x:0
             }
             PropertyChanges
             {
-               target: viewOnlinePlayers
-               focus:   false
-               visible: false
-               enabled: false
+               target: backgroundImage
+               x: -main.width
             }
          },
          State
@@ -139,14 +152,21 @@ ApplicationWindow {
             PropertyChanges
             {
                target: playScreen
-               visible: true
-//               enabled: false
+               y: -main.height
             }
             PropertyChanges {
                target: resultScreen
-               visible: true
-               enabled: true
-               opacity: 0.8
+               y: 0
+            }
+            PropertyChanges
+            {
+               target: backgroundImage
+               y: -main.height
+            }
+            PropertyChanges {
+               target: viewOnlinePlayers
+               y: 0
+               x: -main.width
             }
          },
          State
@@ -172,20 +192,6 @@ ApplicationWindow {
                y: 0
                opacity: 1
             }
-//            PropertyChanges
-//            {
-//               target: viewOnlinePlayers
-//               focus: false
-//               enabled: false
-//               opacity: 0.5
-//            }
-//            PropertyChanges
-//            {
-//               target: waitPopup
-//               visible: true
-//               ynPopup: true
-////               opacity: 1
-//            }
          }
 
       ]
@@ -282,6 +288,50 @@ ApplicationWindow {
                properties: "y"
                duration: 2000
             }
+         },
+         Transition
+         {
+            from: "requestToPlayGamePopup"
+            to: "playGameScreen"
+            PropertyAnimation
+            {
+               targets: [waitPopup, backgroundImage, waitingScreen, playScreen]
+               properties: "x"
+               duration: 2000
+            }
+         },
+         Transition
+         {
+            from: "waitingScreen"
+            to: "playGameScreen"
+            PropertyAnimation
+            {
+               targets: [waitPopup, backgroundImage, waitingScreen, playScreen]
+               properties: "x"
+               duration: 2000
+            }
+         },
+         Transition
+         {
+            from: "playGameScreen"
+            to: "resultScreen"
+            PropertyAnimation
+            {
+               targets: [playScreen, resultScreen, backgroundImage]
+               properties: "y"
+               duration: 2000
+            }
+         },
+         Transition
+         {
+            from: "resultScreen"
+            to: "playersListScreen"
+            PropertyAnimation
+            {
+               targets: [viewOnlinePlayers, resultScreen, backgroundImage]
+               properties: "x"
+               duration: 2000
+            }
          }
       ]
    }
@@ -303,10 +353,10 @@ ApplicationWindow {
       {
          if(y === 0)
          {
-//            animation.start()
+            animation.start()
          }else
          {
-//            animation.stop()
+            animation.stop()
          }
       }
    }
@@ -336,6 +386,10 @@ ApplicationWindow {
    PlayScreen{
       id: playScreen
       x: main.width
+      width: parent.width
+      height: parent.height
+      background.width: Screen.desktopAvailableWidth
+      background.height: Screen.desktopAvailableHeight
    }
 
    ResultScreen{
@@ -353,6 +407,7 @@ ApplicationWindow {
 
       function buttonPressed()
       {
+         console.log("button pressed!!")
          onlinePlayers.clear()
          screens.state = "playersListScreen"
          onlineListController.returnToList();

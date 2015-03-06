@@ -2,17 +2,29 @@ import QtQuick 2.0
 
 Rectangle
 {
-   width: main.width
-   height: main.height
+//   width: main.width
+//   height: main.height
    opacity: 1
    id: root
 
    enabled: false
-   visible: false
+   visible: true
    property bool isStartsFirst: true
    property int inMove : 9
    property int outMove : 9
-   color: main.color
+   property alias background: background
+//   color: main.color
+
+   Image
+   {
+      id: background
+      fillMode: Image.Tile
+      smooth: true
+      clip: true
+      horizontalAlignment: Image.AlignLeft
+      verticalAlignment: Image.AlignTop
+      source: "./backgroudFill.png"
+   }
 
    Canvas
    {
@@ -20,21 +32,39 @@ Rectangle
        anchors.fill: parent
        property variant destPoint: [0, 0]
        property variant prevPoint: [0, 0]
+       property bool clearCanvas: false
        onPaint:
        {
           var ctx = getContext('2d')
-          ctx.strokeStyle = "darkblue"
-          ctx.lineWidth = 3
-          ctx.lineCap = 'round'
+          if(clearCanvas === true)
+          {
+             destPoint = [0,0]
+             prevPoint = [0,0]
+             ctx.clearRect(0, 0, width, height)
+             clearCanvas = false
+          } else
+          {
+             ctx.strokeStyle = "darkblue"
+             ctx.lineWidth = 3
+             ctx.lineCap = 'round'
 
-          ctx.beginPath()
-          ctx.moveTo(prevPoint[0], prevPoint[1])
-          ctx.lineTo(destPoint[0], destPoint[1])
-          prevPoint[0] = destPoint[0]
-          prevPoint[1] = destPoint[1]
-          ctx.stroke()
-//          ctx.closePath()
-          console.log("prevPoint " + prevPoint + " destPoint " + destPoint)
+             ctx.beginPath()
+             ctx.moveTo(prevPoint[0], prevPoint[1])
+             ctx.lineTo(destPoint[0], destPoint[1])
+             prevPoint[0] = destPoint[0]
+             prevPoint[1] = destPoint[1]
+             ctx.stroke()
+   //          ctx.closePath()
+             console.log("prevPoint " + prevPoint + " destPoint " + destPoint)
+          }
+
+       }
+       onClearCanvasChanged:
+       {
+          if(clearCanvas == true)
+          {
+             requestPaint()
+          }
        }
    }
 
@@ -118,26 +148,35 @@ Rectangle
 //      drawField()
 //   }
 
-   onVisibleChanged:
-   {
-      if (visible == true)
-      {
-         field.init()
-//         fieldView.enabled = isStartsFirst
-//         drawField()
-      }else
-      {
-         fieldView.enabled = false
-      }
-   }
-
+//   onVisibleChanged:
+//   {
+//      if (visible == true)
+//      {
+////         field.init()
+////         fieldView.enabled = isStartsFirst
+////         drawField()
+//      }else
+//      {
+//         fieldView.enabled = false
+//      }
+//   }
+   property bool flag: false
    onXChanged:
    {
       console.log("playfield x changed " + x)
       if (x === 0)
       {
-         fieldView.enabled = isStartsFirst
-         drawField()
+         if(flag)
+         {
+            field.init()
+            fieldView.enabled = isStartsFirst
+            drawField()
+            flag = false
+            console.log("isStartsFirs " + isStartsFirst)
+         } else
+         {
+            flag = true
+         }
       }
    }
 
@@ -205,6 +244,9 @@ Rectangle
             canvas.prevPoint[1] = startPoint[1] + centerPoint[1]
             canvas.destPoint[0] = startPoint[0] + centerPoint[0]
             canvas.destPoint[1] = startPoint[1] + centerPoint[1]
+         }else
+         {
+            checkCollision()
          }
       }
    }
@@ -262,26 +304,15 @@ Rectangle
    {
       id: drawingCross2
       canv: canvas
+      onRunningChanged:
+      {
+         if (running == false)
+         {
+            checkCollision()
+         }
+      }
    }
 
-//   Timer
-//   {
-//      id: coolCrossTimer
-//      property int index : 0
-//      running: false
-//      repeat: true
-//      interval: 5000
-//      onTriggered:
-//      {
-//         if(index != 9)
-//         {
-//            drawCross(index++)
-//         } else
-//         {
-//            stop()
-//         }
-//      }
-//   }
 
    onInMoveChanged:
    {
@@ -299,7 +330,6 @@ Rectangle
          field.get(inMove).value = fieldValues.cross
       }
       fieldView.enabled = true
-      checkCollision()
    }
 
    onOutMoveChanged:
@@ -320,7 +350,7 @@ Rectangle
 
       fieldView.enabled = false
       onlineListController.makeMove(outMove)
-      checkCollision()
+//      checkCollision()
    }
 
    Item
@@ -426,19 +456,25 @@ Rectangle
       case winningResult.contPlaying:
       break;
       case winningResult.youWon:
-         resultScreen.text = "You <br> Won!!!"
+         resultScreen.text = "Победа!!!"
          resultScreen.textColor = "green"
+         resultScreen.enabled = "true"
          main.state = "resultScreen"
+         canvas.clearCanvas = true
       break;
       case winningResult.youLose:
-         resultScreen.text = "You <br> Lose =("
+         resultScreen.text = "Поражение =("
          resultScreen.textColor = "red"
+         resultScreen.enabled = "true"
          main.state = "resultScreen"
+         canvas.clearCanvas = true
       break;
       case winningResult.draw:
-         resultScreen.text = "Draw"
+         resultScreen.text = "Ничья"
          resultScreen.textColor = "blue"
+         resultScreen.enabled = "true"
          main.state = "resultScreen"
+         canvas.clearCanvas = true
       break;
       default:
       break;
@@ -459,18 +495,6 @@ Rectangle
       ///<@todo [1]ChangeToFalse after PlayScreen testing
       focus: true
       //[1]
-//      highlight: Text
-//      {
-//         id: highlightWin
-//         visible: false
-//         width: fieldView.cellWidth
-//         height: fieldView.cellHeight
-//         text: (isStartsFirst)? "X" : "O"
-//         font.pixelSize: height/*(width < height)? width : height*/
-//         font.family: pfKidsProGradeOneFont.name
-//         verticalAlignment: Text.AlignVCenter
-//         horizontalAlignment: Text.AlignHCenter
-//      }
       model: ListModel
       {
          id: field
@@ -487,17 +511,6 @@ Rectangle
       {
          width: main.width/3
          height: main.height/3
-//         Text
-//         {
-//            anchors.fill: parent
-//            width: parent.width
-//            height: parent.height
-//            text: value
-//            font.pixelSize: (parent.width < parent.height)? parent.width : parent.height
-//            font.family: pfKidsProGradeOneFont.name
-//            verticalAlignment: Text.AlignVCenter
-//            horizontalAlignment: Text.AlignHCenter
-//         }
          MouseArea
          {
             anchors.fill: parent
@@ -514,35 +527,6 @@ Rectangle
       Keys.onReturnPressed:
       {
          root.outMove = currentIndex
-      }
-      onEnabledChanged:
-      {
-         if(enabled == false)
-         {
-            fadeOutWhenDisable.start()
-         }
-         else
-         {
-            appearWhenEnable.start()
-         }
-      }
-      PropertyAnimation
-      {
-         id: fadeOutWhenDisable
-         target: root
-         easing.type: Easing.OutExpo
-         properties: "opacity"
-         to: 0.3
-         duration: 1500
-      }
-      PropertyAnimation
-      {
-         id: appearWhenEnable
-         target: root
-         easing.type: Easing.InExpo
-         properties: "opacity"
-         to: 1
-         duration: 1000
       }
    }
 }

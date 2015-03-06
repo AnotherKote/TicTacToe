@@ -2,7 +2,7 @@ import QtQuick 2.0
 
 Item
 {
-   visible: false
+   visible: true
    enabled: false
    opacity: 1
    property alias text: screenText.text
@@ -34,7 +34,7 @@ Item
       height: parent.height/3
 
       color: "darkblue"
-      font.pixelSize: parent.height/6
+      font.pixelSize: parent.height/8
       font.family: pfKidsProGradeOneFont.name
       font.bold: true
       verticalAlignment: Text.AlignVCenter
@@ -61,6 +61,7 @@ Item
          anchors.fill: parent
          onClicked:
          {
+            console.log("buttonPressed!")
             buttonPressed()
          }
       }
@@ -84,6 +85,7 @@ Item
          anchors.fill: parent
          onClicked:
          {
+            console.log("buttonPressed!")
             buttonPressed()
          }
       }
