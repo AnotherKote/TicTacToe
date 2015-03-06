@@ -7,7 +7,7 @@ Item  {
    property alias background: background
    property alias text: text
    property alias waitingTimer: waitingTimer
-   visible: false
+   property alias animation: particleSystem
 
    Image
    {
@@ -45,6 +45,7 @@ Item  {
 
    ParticleSystem {
        id: particleSystem
+       running: false
    }
 
    Emitter {

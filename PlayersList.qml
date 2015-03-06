@@ -43,13 +43,18 @@ ApplicationWindow {
       horizontalAlignment: Image.AlignLeft
       verticalAlignment: Image.AlignTop
       source: background.source
+
+      onYChanged:
+      {
+         console.log(" Y changed " + y)
+      }
    }
 
    Item {
       id: screens
-//      state: "playersListScreen"
+      state: "playersListScreen"
 
-      state: "requestToPlayGamePopup"
+//      state: "requestToPlayGamePopup"
 //      state: "resultScreen"
 //      state: "playGameScreen"
 //      state: "waitingScreen"
@@ -63,12 +68,26 @@ ApplicationWindow {
                focus: true
                visible: true
                enabled: true
+               y:0
 //               opacity: 1
             }
             PropertyChanges
             {
                target: waitPopup
-               visible: false
+               visible: true
+               y: main.height
+            }
+            PropertyChanges
+            {
+               target: waitingScreen
+               visible: true
+               text.visible: true
+               y: -main.height
+            }
+            PropertyChanges
+            {
+               target: backgroundImage
+               y: 0
             }
          },
          State
@@ -77,14 +96,12 @@ ApplicationWindow {
             PropertyChanges
             {
                target: viewOnlinePlayers
-//               focus: false
                visible: true
                y: waitingScreen.height
             }
             PropertyChanges
             {
                target: waitingScreen
-               text.text: "Ожидаем ответа от <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText + "<br>"
                visible: true
                y: 0
             }
@@ -138,17 +155,37 @@ ApplicationWindow {
             PropertyChanges
             {
                target: viewOnlinePlayers
-               focus: false
-               enabled: false
-               opacity: 0.5
+               visible: true
+               y: -waitPopup.height
+            }
+            PropertyChanges
+            {
+               target: backgroundImage
+               visible: true
+               y: -waitPopup.height
             }
             PropertyChanges
             {
                target: waitPopup
                visible: true
                ynPopup: true
-//               opacity: 1
+               y: 0
+               opacity: 1
             }
+//            PropertyChanges
+//            {
+//               target: viewOnlinePlayers
+//               focus: false
+//               enabled: false
+//               opacity: 0.5
+//            }
+//            PropertyChanges
+//            {
+//               target: waitPopup
+//               visible: true
+//               ynPopup: true
+////               opacity: 1
+//            }
          }
 
       ]
@@ -176,6 +213,75 @@ ApplicationWindow {
                properties: "y"
                duration: 2000
             }
+         },
+         Transition
+         {
+            from: "waitingScreen"
+            to: "playersListScreen"
+            PropertyAnimation
+            {
+               target: viewOnlinePlayers;
+               properties: "y"
+               duration: 2000
+            }
+            PropertyAnimation
+            {
+               target: waitingScreen;
+               properties: "y"
+               duration: 2000
+            }
+            PropertyAnimation
+            {
+               target: backgroundImage;
+               properties: "y"
+               duration: 2000
+            }
+         },
+         Transition
+         {
+            from: "playersListScreen"
+            to: "requestToPlayGamePopup"
+            PropertyAnimation
+            {
+               target: viewOnlinePlayers;
+               properties: "y"
+               duration: 2000
+            }
+            PropertyAnimation
+            {
+               target: waitPopup;
+               properties: "y"
+               duration: 2000
+            }
+            PropertyAnimation
+            {
+               target: backgroundImage;
+               properties: "y"
+               duration: 2000
+            }
+         },
+         Transition
+         {
+            from: "requestToPlayGamePopup"
+            to: "playersListScreen"
+            PropertyAnimation
+            {
+               target: viewOnlinePlayers;
+               properties: "y"
+               duration: 2000
+            }
+            PropertyAnimation
+            {
+               target: waitPopup;
+               properties: "y"
+               duration: 2000
+            }
+            PropertyAnimation
+            {
+               target: backgroundImage;
+               properties: "y"
+               duration: 2000
+            }
          }
       ]
    }
@@ -193,9 +299,15 @@ ApplicationWindow {
       background.height: Screen.desktopAvailableHeight
       text.font.family: pfKidsProGradeOneFont.name
 
-      onVisibleChanged:
+      onYChanged:
       {
-         waitingTimer.start()
+         if(y === 0)
+         {
+//            animation.start()
+         }else
+         {
+//            animation.stop()
+         }
       }
    }
 
@@ -206,10 +318,7 @@ ApplicationWindow {
       text: "Начать игру с <br>127.0.0.1"
 
       x:0
-      //[test]
-//      y: parent.height
-      y:0
-      //[test]
+      y: parent.height
       width: parent.width
       height: parent.height
 
@@ -226,10 +335,22 @@ ApplicationWindow {
 
    PlayScreen{
       id: playScreen
+      x: main.width
    }
 
    ResultScreen{
       id: resultScreen
+
+      x:0
+      y: parent.height
+      width: parent.width
+      height: parent.height
+
+      background.width: Screen.desktopAvailableWidth
+      background.height: Screen.desktopAvailableHeight
+
+      text: "Победа!"
+
       function buttonPressed()
       {
          onlinePlayers.clear()
@@ -317,6 +438,7 @@ ApplicationWindow {
          {
             screens.state = "waitingScreen"
             onlineListController.requestToStartGame(onlinePlayers.get(currentIndex).myCoolText)
+//            text.text: "Ожидаем ответа от <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText + "<br>"
             waitingScreen.text.text = "Ожидаем ответа от <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText + "<br>"
 //            waitingScreen.visible = true
          }

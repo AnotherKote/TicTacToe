@@ -108,26 +108,36 @@ Rectangle
       }
    }
 
-   onWidthChanged:
-   {
-      drawField()
-   }
+//   onWidthChanged:
+//   {
+//      drawField()
+//   }
 
-   onHeightChanged:
-   {
-      drawField()
-   }
+//   onHeightChanged:
+//   {
+//      drawField()
+//   }
 
    onVisibleChanged:
    {
       if (visible == true)
       {
          field.init()
-         fieldView.enabled = isStartsFirst
-         drawField()
+//         fieldView.enabled = isStartsFirst
+//         drawField()
       }else
       {
          fieldView.enabled = false
+      }
+   }
+
+   onXChanged:
+   {
+      console.log("playfield x changed " + x)
+      if (x === 0)
+      {
+         fieldView.enabled = isStartsFirst
+         drawField()
       }
    }
 

@@ -11,5 +11,6 @@
         <file>particle.png</file>
         <file>mask.png</file>
         <file>DrawingTimer.qml</file>
+        <file>arrow.png</file>
     </qresource>
 </RCC>

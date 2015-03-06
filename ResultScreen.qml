@@ -1,65 +1,61 @@
 import QtQuick 2.0
 
-Rectangle
+Item
 {
-   width: main.width
-   height: main.height
-   color: main.color
    visible: false
    enabled: false
-   opacity: 0
+   opacity: 1
    property alias text: screenText.text
    property alias textColor: screenText.color
+   property alias background: background
+
    function buttonPressed()
    {
+   }
+
+   Image
+   {
+      id: background
+      fillMode: Image.Tile
+      smooth: true
+      clip: true
+      horizontalAlignment: Image.AlignLeft
+      verticalAlignment: Image.AlignTop
+      source: "./backgroudFill.png"
    }
 
    Text
    {
       id: screenText
-      opacity: 1
+      opacity: 0.8
       x: parent.width/4
       y: parent.height/6
       width: parent.width/2
       height: parent.height/3
 
+      color: "darkblue"
       font.pixelSize: parent.height/6
       font.family: pfKidsProGradeOneFont.name
       font.bold: true
       verticalAlignment: Text.AlignVCenter
       horizontalAlignment: Text.AlignHCenter
    }
-   Rectangle
+
+   Text
    {
-      id: shadow
-      x: parent.width/4 + width/10
-      y: parent.height*2/3 + width/10
-      width: parent.width/2
-      height: parent.height/6
-      radius: height/3
-      color: "black"
-   }
-   Rectangle
-   {
-      x: parent.width/4
-      y: parent.height*2/3
-      width: parent.width/2
-      height: parent.height/6
-      radius: height/3
-      color: "lightgreen"
-      Text
-      {
-         id:backToListText
-         anchors.centerIn: parent
-         width: parent.width*3/4
-         height: parent.height
-         font.family: pfKidsProGradeOneFont.name
-         text: "Back to list"
-         verticalAlignment: Text.AlignVCenter
-         horizontalAlignment: Text.AlignHCenter
-         font.pixelSize: parent.height
-         scale: paintedWidth > width ? (width/paintedWidth) : 1
-      }
+      id:backToListText
+      opacity: 0.8
+      anchors.bottom: parent.bottom
+      anchors.bottomMargin: parent.height/10
+      anchors.horizontalCenter: screenText.horizontalCenter
+      color: "darkblue"
+      font.family: pfKidsProGradeOneFont.name
+      font.bold: true
+      text: "Назад к списку <br> игроков"
+      verticalAlignment: Text.AlignVCenter
+      horizontalAlignment: Text.AlignHCenter
+      font.pixelSize: 33
+      //      scale: paintedWidth > width ? (width/paintedWidth) : 1
       MouseArea
       {
          anchors.fill: parent
@@ -67,15 +63,28 @@ Rectangle
          {
             buttonPressed()
          }
-         onPressed:
+      }
+   }
+
+   Image
+   {
+      id: arrow
+      opacity: 0.8
+      smooth: true
+      antialiasing: true
+      fillMode: Image.PreserveAspectFit
+      anchors.right: backToListText.left
+      anchors.verticalCenter: backToListText.verticalCenter
+      width: backToListText.x
+//      horizontalAlignment: Image.AlignLeft
+//      verticalAlignment: Image.AlignTop
+      source: "./arrow.png"
+      MouseArea
+      {
+         anchors.fill: parent
+         onClicked:
          {
-            parent.x += width/15
-            parent.y += width/15
-         }
-         onReleased:
-         {
-            parent.x -= width/15
-            parent.y -= width/15
+            buttonPressed()
          }
       }
    }
