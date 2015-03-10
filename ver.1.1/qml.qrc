@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>PlayersList.qml</file>
+        <file>WaitPopup.qml</file>
+        <file>PlayScreen.qml</file>
+        <file>ResultScreen.qml</file>
+        <file>PFKidsProGradeOne.ttf</file>
+        <file>backgroudFill.png</file>
+        <file>animation/Underline.gif</file>
+        <file>WaitingScreen.qml</file>
+        <file>particle.png</file>
+        <file>mask.png</file>
+        <file>DrawingTimer.qml</file>
+        <file>arrow.png</file>
+    </qresource>
+</RCC>
