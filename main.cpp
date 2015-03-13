@@ -1,4 +1,4 @@
-#include "MyCoolTTT.hpp"
+#include "CNetworkManager.hpp"
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -9,13 +9,13 @@ int main(int argc, char *argv[])
 {
    QApplication a(argc, argv);
 
-//   qmlRegisterType<MyCoolTTT>("MyCoolTTT", 1, 0, "MyCoolTTT");
+//   qmlRegisterType<CNetworkManager>("CNetworkManager", 1, 0, "CNetworkManager");
 
    QQmlApplicationEngine engine;
    engine.load(QUrl(QStringLiteral("qrc:/PlayersList.qml")));
-   MyCoolTTT w;
+   CNetworkManager w;
    w.setRootObjects(engine.rootObjects());
-   engine.rootContext()->setContextProperty("onlineListController", &w);
+   engine.rootContext()->setContextProperty("cNetworkManager", &w);
 
    return a.exec();
 }

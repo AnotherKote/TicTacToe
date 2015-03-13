@@ -13,11 +13,9 @@ TEMPLATE = app
 CONFIG += c++11
 
 SOURCES += main.cpp\
-        MyCoolTTT.cpp
+        CNetworkManager.cpp
 
-HEADERS  += MyCoolTTT.hpp
-
-DISTFILES +=
+HEADERS  += CNetworkManager.hpp
 
 RESOURCES += \
     qml.qrc

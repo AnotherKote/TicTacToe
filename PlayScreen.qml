@@ -32,19 +32,18 @@ Rectangle
        anchors.fill: parent
        property variant destPoint: [0, 0]
        property variant prevPoint: [0, 0]
+       property string colour: "darkblue"
        property bool clearCanvas: false
        onPaint:
        {
           var ctx = getContext('2d')
-          if(clearCanvas === true)
-          {
+          if(clearCanvas === true){
              destPoint = [0,0]
              prevPoint = [0,0]
              ctx.clearRect(0, 0, width, height)
              clearCanvas = false
-          } else
-          {
-             ctx.strokeStyle = "darkblue"
+          } else {
+             ctx.strokeStyle = colour
              ctx.lineWidth = 3
              ctx.lineCap = 'round'
 
@@ -61,8 +60,7 @@ Rectangle
        }
        onClearCanvasChanged:
        {
-          if(clearCanvas == true)
-          {
+          if(clearCanvas == true){
              requestPaint()
           }
        }
@@ -70,6 +68,8 @@ Rectangle
 
    function drawField()
    {
+      canvas.colour = "darkblue"
+
       drawingTimerHorizontal1.srcPoint = [root.width/3, Math.random() * height/8]
       drawingTimerHorizontal1.dstPoint = [root.width/3, root.height - Math.random() * height/8]
       drawingTimerHorizontal1.step = [0, 20]
@@ -193,6 +193,7 @@ Rectangle
       width -= 2 * margin
       height -= 2 * margin
 
+      canvas.colour = "red"
       circleTimer.centerPoint[0] = topLeftCornerX + width/2
       circleTimer.centerPoint[1] = topLeftCornerY + height/2
       circleTimer.radius = (width > height)? height/2 : width/2
@@ -263,6 +264,9 @@ Rectangle
       topLeftCornerY += margin
       width -= 2 * margin
       height -= 2 * margin
+
+      canvas.colour = "blue"
+
       console.log("cross " + " width " + width + " height " + height + " X " + topLeftCornerX + " Y " + topLeftCornerY)
       if(width > height)
       {
@@ -349,7 +353,7 @@ Rectangle
       }
 
       fieldView.enabled = false
-      onlineListController.makeMove(outMove)
+      cNetworkManager.makeOuterMove(outMove)
 //      checkCollision()
    }
 

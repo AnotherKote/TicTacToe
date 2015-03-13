@@ -13,16 +13,43 @@ ApplicationWindow {
    minimumHeight: height
    maximumHeight: height
 
+//   visibility: "FullScreen"
+
    visible: true
    color: "white"
    id: main
    objectName: "mainWindow"
-   property alias isStartsFirst: playScreen.isStartsFirst
-   property alias inMove: playScreen.inMove
+//   property alias isStartsFirst: playScreen.isStartsFirst
+//   property alias inMove: playScreen.inMove
    property alias outMove: playScreen.outMove
    property alias state: screens.state
 
    FontLoader { id: pfKidsProGradeOneFont; source: "./PFKidsProGradeOne.ttf" }
+
+   signal popupAnswer(var a)
+   signal startBroadcasting(var bStartBroadcasting)
+
+   Connections
+   {
+      target: cNetworkManager
+      onMakeInnerMove:{
+         playScreen.inMove = move
+      }
+      onChangeState:{
+         screens.state = state
+      }
+      onIsStartsFirst:{
+         playScreen.isStartsFirst = bStartsFirst;
+      }
+      onAddPlayerToList:{
+         console.log("add player to list")
+         onlinePlayers.addToList(playerName)
+      }
+      onShowRequestToPlayGamePopup:{
+         waitPopup.text = "Начать игру с <br> " + opponentName + "?";
+         screens.state = "requestToPlayGamePopup"
+      }
+   }
 
    Image
    {
@@ -33,7 +60,8 @@ ApplicationWindow {
    Image
    {
       id: backgroundImage
-
+      x: 0
+      y: 0
       width: Screen.desktopAvailableWidth
       height: Screen.desktopAvailableHeight
 
@@ -245,8 +273,8 @@ ApplicationWindow {
          },
          Transition
          {
-            from: "playersListScreen"
-            to: "requestToPlayGamePopup"
+            from: "playersListScreen,requestToPlayGamePopup"
+            to: "requestToPlayGamePopup,playersListScreen"
             PropertyAnimation
             {
                target: viewOnlinePlayers;
@@ -268,41 +296,7 @@ ApplicationWindow {
          },
          Transition
          {
-            from: "requestToPlayGamePopup"
-            to: "playersListScreen"
-            PropertyAnimation
-            {
-               target: viewOnlinePlayers;
-               properties: "y"
-               duration: 2000
-            }
-            PropertyAnimation
-            {
-               target: waitPopup;
-               properties: "y"
-               duration: 2000
-            }
-            PropertyAnimation
-            {
-               target: backgroundImage;
-               properties: "y"
-               duration: 2000
-            }
-         },
-         Transition
-         {
-            from: "requestToPlayGamePopup"
-            to: "playGameScreen"
-            PropertyAnimation
-            {
-               targets: [waitPopup, backgroundImage, waitingScreen, playScreen]
-               properties: "x"
-               duration: 2000
-            }
-         },
-         Transition
-         {
-            from: "waitingScreen"
+            from: "requestToPlayGamePopup,waitingScreen"
             to: "playGameScreen"
             PropertyAnimation
             {
@@ -377,7 +371,7 @@ ApplicationWindow {
 
       onPopupAnswerChanged:
       {
-         onlineListController.popupAnswer = popupAnswer
+         main.popupAnswer(popupAnswer)
          console.log("popup answer" + popupAnswer)
          popupAnswer = 0
       }
@@ -410,7 +404,8 @@ ApplicationWindow {
          console.log("button pressed!!")
          onlinePlayers.clear()
          screens.state = "playersListScreen"
-         onlineListController.returnToList();
+         main.startBroadcasting(true)
+//         cNetworkManager.startBroadcasting();
       }
    }
 
@@ -455,7 +450,17 @@ ApplicationWindow {
          }
          MouseArea {
             anchors.fill: parent
-            onClicked: viewOnlinePlayers.currentIndex = index
+            onClicked:{
+               viewOnlinePlayers.currentIndex = index
+
+               if(onlinePlayers.count != 0){
+                  screens.state = "waitingScreen"
+                  cNetworkManager.requestToStartGame(onlinePlayers.get(index).myCoolText)
+      //            text.text: "Ожидаем ответа от <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText + "<br>"
+                  waitingScreen.text.text = "Ожидаем ответа от <br> " + onlinePlayers.get(index).myCoolText + "<br>"
+      //            waitingScreen.visible = true
+               }
+            }
          }
       }
    }
@@ -465,9 +470,24 @@ ApplicationWindow {
       objectName: "onlinePlayersList"
       dynamicRoles: true
 
-      function addToList(msg)
-      {
-         append({ myCoolText: msg })
+      function isUnique(data){
+         var ret = true
+
+         for(var i = 0; i < count; ++i){
+            if(get(i).myCoolText === data){
+               ret = false
+               break;
+            }
+         }
+         return ret;
+      }
+
+      function addToList(msg){
+
+         if (isUnique(msg)){
+             append({ myCoolText: msg })
+         }
+
       }
    }
 
@@ -492,7 +512,7 @@ ApplicationWindow {
          if(onlinePlayers.count != 0)
          {
             screens.state = "waitingScreen"
-            onlineListController.requestToStartGame(onlinePlayers.get(currentIndex).myCoolText)
+            cNetworkManager.requestToStartGame(onlinePlayers.get(currentIndex).myCoolText)
 //            text.text: "Ожидаем ответа от <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText + "<br>"
             waitingScreen.text.text = "Ожидаем ответа от <br> " + onlinePlayers.get(viewOnlinePlayers.currentIndex).myCoolText + "<br>"
 //            waitingScreen.visible = true
@@ -509,6 +529,8 @@ ApplicationWindow {
             clip: true
             source: "./backgroudFill.png"
             fillMode: Image.Tile
+            x: 0
+            y: 0
             width: parent.width
             height: parent.height
             horizontalAlignment: Image.AlignLeft
